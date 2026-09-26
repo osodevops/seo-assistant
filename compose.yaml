@@ -1,0 +1,45 @@
+name: seo-growth-assistant
+
+x-app: &app
+  build:
+    context: .
+  restart: unless-stopped
+  environment:
+    SEO_SITE_URL: ${SEO_SITE_URL:-https://www.kafka-streamyard.com}
+    SEO_SITE_DIRECTORY: /website
+    SEO_DATABASE_PATH: /data/seo-growth.db
+    SEO_GA4_PROPERTY_ID: ${SEO_GA4_PROPERTY_ID:-}
+    SEO_SEARCH_CONSOLE_SITE_URL: ${SEO_SEARCH_CONSOLE_SITE_URL:-https://www.kafka-streamyard.com/}
+    GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/google-credentials.json
+    OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    SEO_OPENAI_MODEL: ${SEO_OPENAI_MODEL:-gpt-4.1-mini}
+    SEO_AUTO_APPLY: ${SEO_AUTO_APPLY:-false}
+    SEO_SYNC_INTERVAL_HOURS: ${SEO_SYNC_INTERVAL_HOURS:-24}
+  volumes:
+    - seo-data:/data
+    - "${SEO_WEBSITE_PATH:-../kafka-streamyard-website}:/website"
+    - ./secrets:/run/secrets:ro
+
+services:
+  web:
+    <<: *app
+    ports:
+      - "127.0.0.1:${SEO_DASHBOARD_PORT:-8765}:8765"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8765/healthz', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+
+  scheduler:
+    <<: *app
+    command: ["python", "-m", "seo_growth.scheduler"]
+    depends_on:
+      web:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+
+volumes:
+  seo-data:

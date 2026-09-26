@@ -1,0 +1,15 @@
+Metadata-Version: 2.4
+Name: seo-growth-assistant
+Version: 0.1.0
+Summary: A measured SEO improvement loop for Kafka Streamyard
+Requires-Python: >=3.12
+Requires-Dist: fastapi==0.116.1
+Requires-Dist: google-analytics-data==0.18.19
+Requires-Dist: google-api-python-client==2.176.0
+Requires-Dist: google-auth==2.40.3
+Requires-Dist: openai==1.97.1
+Requires-Dist: python-dotenv==1.1.1
+Requires-Dist: uvicorn==0.35.0
+Provides-Extra: dev
+Requires-Dist: httpx==0.28.1; extra == "dev"
+Requires-Dist: pytest==8.4.1; extra == "dev"

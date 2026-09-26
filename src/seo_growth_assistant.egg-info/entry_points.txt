@@ -1,0 +1,2 @@
+[console_scripts]
+seo-growth = seo_growth.main:run
